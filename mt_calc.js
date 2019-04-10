@@ -40,3 +40,72 @@
 
 /* ===================================================================== */
 
+window.onload = init();
+
+function init() {
+   var calcButtons = document.querySelectorAll("input.calcButton");
+   for (var i = 0; i < calcButtons.length; i++) {
+      calcButtons[i].addEventListener("click", buttonClick);
+   }
+   document.getElementById("calcWindow").addEventListener("keydown", calcKeys);
+}
+
+function buttonClick(e) {
+   var calcValue = document.getElementById("calcWindow").value;
+   var calcDecimal = document.getElementById("decimals").value;
+   var buttonValue = e.target.value;
+   switch (buttonValue) {
+      case "del":
+         calcValue = "";
+         break;
+      case "bksp":
+         calcValue = eraseChar(calcValue);
+         break;
+      case "enter":
+         calcValue += " = " + evalEq(calcValue, calcDecimal) + "\n";
+         break;
+      case "prev":
+         calcValue += lastEq(calcValue);
+         break;
+      default:
+         calcValue = calcValue + buttonValue;
+
+   }   
+   document.getElementById("calcWindow").focus();
+   document.getElementById("calcWindow").value = calcValue;
+}
+
+function calcKeys(e) {
+   var calcValue = document.getElementById("calcWindow").value;
+   var calcDecimal = document.getElementById("decimals").value;
+   switch (e.key) {
+      case "Delete":
+         calcValue = "";
+         break;
+      case "Enter":
+         calcValue += " = " + evalEq(calcValue, calcDecimal);
+         break;
+      case "ArrowUp":
+         calcValue += lastEq(calcWindow.value);
+         e.preventDefault();
+         break;
+   }
+   document.getElementById("calcWindow").value = calcValue;
+}
+
+function evalEq(textStr, decimals) {
+   var lines = textStr.split(/\r?\n/);
+   var lastLine = lines[lines.length - 1];
+   var eqValue = eval(lastLine);
+   return eqValue.toFixed(decimals);
+}
+
+function eraseChar(textStr) {
+   return textStr.substr(0, textStr.length - 1);
+}
+
+function lastEq(textStr) {
+   var lines = textStr.split(/\r?\n/);
+   var lastExp = lines[lines.length - 2];
+   return lastExp.substr(0, lastExp.indexOf("=")).trim();
+}
